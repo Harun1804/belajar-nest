@@ -11,10 +11,7 @@ import { MessagesService } from './messages.service';
 
 @Controller('messages')
 export class MessagesController {
-  messagesService: MessagesService;
-  constructor() {
-    this.messagesService = new MessagesService();
-  }
+  constructor(protected messagesService: MessagesService) {}
 
   @Get()
   index() {
