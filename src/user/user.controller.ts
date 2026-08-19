@@ -26,8 +26,7 @@ export class UserController {
 
   @Get()
   async findAll(@Query() psUser: PsUser) {
-    const { page, limit } = psUser;
-    const { data, pagination } = await this.userService.findAll(page, limit);
+    const { data, pagination } = await this.userService.findAll(psUser);
     return apiResponse('Users Fetched Successfully', data, pagination);
   }
 

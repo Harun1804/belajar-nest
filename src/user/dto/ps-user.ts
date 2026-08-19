@@ -13,4 +13,8 @@ export class PsUser {
   @IsInt()
   @Min(1)
   limit: number = 10;
+
+  @IsOptional()
+  @Type(() => String)
+  keyword: string = '';
 }

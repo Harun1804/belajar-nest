@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PsUser } from './dto/ps-user';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Like, Repository } from 'typeorm';
 import { PaginationMeta } from '../common/interfaces/api-response.interface';
 import { paginateWrapper } from '../common/helpers/pagination-wrapper';
 
@@ -20,12 +21,20 @@ export class UserService {
   }
 
   async findAll(
-    page = 1,
-    limit = 10,
+    ps: PsUser,
   ): Promise<{ data: User[]; pagination: PaginationMeta }> {
+    const page = ps.page || 1;
+    const limit = ps.limit || 10;
+    const keyword = ps.keyword || '';
+
+    const whereCondition: FindOptionsWhere<User>[] | undefined = keyword
+      ? [{ fullname: Like(`%${keyword}%`) }, { email: Like(`%${keyword}%`) }]
+      : undefined;
+
     const [data, totalData] = await this.userRepository.findAndCount({
       skip: (page - 1) * limit,
       take: limit,
+      where: whereCondition,
     });
 
     return paginateWrapper(data, page, limit, totalData);
