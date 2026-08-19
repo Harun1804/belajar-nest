@@ -10,6 +10,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { apiResponse } from '../common/helpers/api-response.helper';
 
 @Controller('user')
 export class UserController {
@@ -17,84 +18,31 @@ export class UserController {
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    try {
-      await this.userService.create(createUserDto);
-      return {
-        success: true,
-        message: 'User created successfully',
-      };
-    } catch (error) {
-      // Handle error appropriately
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
+    await this.userService.create(createUserDto);
+    return apiResponse('User created successfully');
   }
 
   @Get()
   async findAll() {
-    try {
-      const users = await this.userService.findAll();
-      return {
-        success: true,
-        data: users,
-      };
-    } catch (error) {
-      // Handle error appropriately
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
+    const data = await this.userService.findAll();
+    return apiResponse('Users Fetched Successfully', data);
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    try {
-      const data = await this.userService.findOne(+id);
-      return {
-        success: true,
-        data,
-        message: 'User Fetched Successfully',
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
+    const data = await this.userService.findOne(+id);
+    return apiResponse('User Fetched Successfully', data);
   }
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    try {
-      await this.userService.update(+id, updateUserDto);
-      return {
-        success: true,
-        message: 'User Updated Successfully',
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
+    await this.userService.update(+id, updateUserDto);
+    return apiResponse('User Updated Successfully');
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    try {
-      await this.userService.remove(+id);
-      return {
-        success: true,
-        message: 'User Deleted Successfully',
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
+    await this.userService.remove(+id);
+    return apiResponse('User Deleted Successfully');
   }
 }
