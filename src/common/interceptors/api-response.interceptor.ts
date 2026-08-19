@@ -6,14 +6,18 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ApiResponse } from '../interfaces/api-response.interface';
+import {
+  ApiResponse,
+  PaginationMeta,
+} from '../interfaces/api-response.interface';
 
-// Handlers may return raw data, or { message, data } to customize the message
-type HandlerResult<T> = T | { message: string; data: T };
+// Handlers may return raw data, or { message, data, pagination? } to customize the message/add pagination
+type HandlerResult<T> =
+  T | { message: string; data: T; pagination?: PaginationMeta };
 
 function hasCustomMessage<T>(
   result: HandlerResult<T>,
-): result is { message: string; data: T } {
+): result is { message: string; data: T; pagination?: PaginationMeta } {
   return (
     typeof result === 'object' &&
     result !== null &&
@@ -38,6 +42,7 @@ export class ApiResponseInterceptor<T> implements NestInterceptor<
             status: true,
             message: result.message,
             data: result.data,
+            ...(result.pagination ? { pagination: result.pagination } : {}),
           };
         }
 

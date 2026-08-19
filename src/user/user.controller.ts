@@ -6,10 +6,12 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PsUser } from './dto/ps-user';
 import { apiResponse } from '../common/helpers/api-response.helper';
 
 @Controller('user')
@@ -23,9 +25,10 @@ export class UserController {
   }
 
   @Get()
-  async findAll() {
-    const data = await this.userService.findAll();
-    return apiResponse('Users Fetched Successfully', data);
+  async findAll(@Query() psUser: PsUser) {
+    const { page, limit } = psUser;
+    const { data, pagination } = await this.userService.findAll(page, limit);
+    return apiResponse('Users Fetched Successfully', data, pagination);
   }
 
   @Get(':id')
