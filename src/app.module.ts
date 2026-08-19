@@ -1,11 +1,29 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CatController } from './cat/cat.controller';
+import { UserModule } from './user/user.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController, CatController],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.POSTGRES_HOST,
+      port: parseInt(process.env.POSTGRES_PORT ?? '5432', 10),
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DATABASE,
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      synchronize: process.env.APP_ENV !== 'production',
+      logging: process.env.APP_ENV !== 'production',
+    }),
+    UserModule,
+  ],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
